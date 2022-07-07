@@ -1,0 +1,48 @@
+//-react-begginers-most-likely-to-make-mistake-[wds]
+
+import { useState } from "react";
+import "./styles.css";
+const data = [
+  {id:1, name:'a', value:10},
+  {id:2, name:'b', value:20},
+  {id:3, name:'c', value:30},
+]
+
+const List = ({list, incrementFunc, selectFunc}) => {
+return list.map(({id,name,value})=>{
+  return (<div key={id}>
+    <span>----{name}----{value}---</span>
+    <button onClick={()=>incrementFunc(id)} >Increment</button> ---
+    <button onClick={()=>selectFunc(id)} >Select</button>
+  </div>)
+})
+
+}
+
+export default function App() {
+const [state, setState] = useState({listData:data,text:'none',display:0})
+const {listData, text, display} = state
+
+const incrementer = (idFromButton) => {
+  const toChange = listData.map(({id,value,...rest})=>{
+    if(id===idFromButton) return {id,...rest, value:value+1}
+    return {id,value,...rest}
+  })
+  console.log(toChange);
+  const {value} = listData.find(({id})=> id === idFromButton)
+
+  setState(prevState=> ({...prevState, listData:toChange, display:value}))
+}
+
+const selector = (idFromButton) => {
+  const {name,value ,...rest} = listData.find(({id})=> id === idFromButton)
+  setState(prevState=> ({...prevState, text:name, display:value}))
+}
+
+  return (
+    <div className="App">
+      <h1>Selected : {text} with {display}</h1>
+      <List list={listData} incrementFunc={incrementer} selectFunc={selector}/>
+    </div>
+  );
+}
