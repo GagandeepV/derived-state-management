@@ -4,57 +4,50 @@
 import { useState } from "react";
 import "./styles.css";
 const data = [
-  {id:1, name:'a', value:10},
-  {id:2, name:'b', value:20},
-  {id:3, name:'c', value:30},
+  { id: 1, name: 'a', value: 10 },
+  { id: 2, name: 'b', value: 20 },
+  { id: 3, name: 'c', value: 30 },
 ]
 
-const Header = ({id,name,value}) => {
-    return id?<h1>Selected : {name} with {value}</h1>:'NONE'
+const Header = ({ id, list }) => {
+  const selected = list.find(({ id: listId }) => listId === id)
+  return id ? <h1>Selected : {selected.name} with {selected.value}</h1> : 'NONE'
 }
 
-const List = ({list, incrementFunc, selectFunc}) => {
-return list.map(({id,name,value})=>{
-  return (<div key={id}>
-    <span>----{name}----{value}---</span>
-    <button onClick={()=>incrementFunc(id)} >Increment</button> ---
-    <button onClick={()=>selectFunc(id)} >Select</button>
-  </div>)
-})
+const List = ({ list, incrementFunc, selectFunc }) => {
+  return list.map(({ id, name, value }) => {
+    return (<div key={id}>
+      <span>----{name}----{value}---</span>
+      <button onClick={() => incrementFunc(id)} >Increment</button>---
+      <button onClick={() => selectFunc(id)} >Select</button>
+    </div>)
+  })
 
 }
 
 export default function App() {
-const [state, setState] = useState({listData:data,text:{},display:0})
-const {listData, text, display} = state
+  const [state, setState] = useState({ listData: data, selectId: 0 })
+  const { listData, selectId } = state
 
-const incrementer = (idFromButton) => {
-  const toChange = listData.map(({id,value,...rest})=>{
-    if(id===idFromButton) return {id,...rest, value:value+1}
-    return {id,value,...rest}
-  })
+  const incrementer = (idFromButton) => {
+    const toChange = listData.map(({ id, value, ...rest }) => {
+      if (id === idFromButton) return { id, ...rest, value: value + 1 }
+      return { id, value, ...rest }
+    })
 
-  setState(prevState=> ({...prevState, listData:toChange}))
-}
+    setState(prevState => ({ ...prevState, listData: toChange }))
+  }
 
-const selector = (idFromButton) => {
-  const selected = listData.find(({id})=> id === idFromButton)
-  console.log(selected);
-  
-  setState(prevState=>({...prevState, text:selected}))
-}
-console.log(text);
+  const selector = (idFromButton) => {
+    const selected = listData.find(({ id }) => id === idFromButton)
+    setState(prevState => ({ ...prevState, selectId: selected.id }))
+  }
 
-  // return (
-  //   <div className="App">
-  //     <h1>Selected : {text} with {display}</h1>
-  //     <List list={listData} incrementFunc={incrementer} selectFunc={selector}/>
-  //   </div>
-  // );
   return (
     <div className="App">
-      <Header {...text}/>
-      <List list={listData} incrementFunc={incrementer} selectFunc={selector}/>
+      <Header id={selectId} list={listData} />
+      <hr />
+      <List list={listData} incrementFunc={incrementer} selectFunc={selector} />
     </div>
   );
 }
